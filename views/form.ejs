@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./head'); %>
+  <body>
+    <%- include('./test'); %>
+    <div class="home-wrapper">
+      <h1>Optimi<span>z</span>e</h1>
+      <p>
+        Convert your images to
+        <a href="https://en.wikipedia.org/wiki/WebP">webp.</a>
+      </p>
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+        <label class="select-image">
+          <div>
+
+          </div>
+          <input
+          
+          type="file"
+          name="image"
+          placeholder="Select image from your computer"
+          />
+        </label>
+        <div>
+
+          <input class="original-size"
+          type="checkbox"
+          name="originalSize"
+          placeholder="Do you want the original dimensions?"
+          />
+          <span class="maintain"> Maintain dimensions?</span> 
+        </div>
+        
+        
+        <input
+        onblur="this.value=removeSpace(this.value)"
+        required
+          type="text"
+          name="filename"
+          placeholder="input name"
+        />
+        <input class="width-input"
+          type="number"
+          name="filewidth"
+          placeholder="width"
+        />
+        <input class="height-input"
+          type="number"
+          name="fileheight"
+          placeholder="height"
+        />
+        <button type="submit">Upload Image</button>
+        <a class="button2" href="/form2" >Gallery Grid?</a>
+      </form>
+    </div>
+    <footer>
+
+    </footer>
+  </body>
+  <script>
+    function removeSpace(string) {
+      return string.split(' ').join('')
+    }
+
+    let originalSize = document.querySelector('.original-size');
+    let fileHeight = document.querySelector('.height-input');
+    let fileWidth = document.querySelector('.width-input');
+    originalSize.addEventListener('click',()=>{
+
+      fileWidth.classList.toggle("input-hide")
+      fileHeight.classList.toggle("input-hide")
+      
+      
+    })
+    console.log(originalSize.checked);
+    
+    setInterval(() => {  
+    if(originalSize.checked){
+    fileWidth.classList.add("input-hide")
+    fileHeight.classList.add("input-hide")
+    fileWidth.value=null  
+    fileHeight.value=null  
+    } 
+    }, 1000);
+
+  </script>
+  <style>
+    
+    
+  </style>
+</html>
