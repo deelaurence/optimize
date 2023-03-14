@@ -18,6 +18,7 @@
     <h4>Timestamp.</h4>
     <p><%= Date.now() %></p>
     <a href=<%= imageSource %> download >Download</a>
+    <a onclick="history.back()">Back</a>
 </div>
         </section>
         <section class="image-container">
@@ -49,6 +50,9 @@
             margin-top: 20px;
             display: block;
             color: orangered;
+            text-decoration: underline;
+            cursor: pointer;
+            
         }
         p{
             font-size: 12px;

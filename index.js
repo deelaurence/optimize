@@ -17,10 +17,10 @@ const app = (0, express_1.default)();
 const port = 3000;
 app.use(express_1.default.json());
 const path = require("path");
+const zip = require("express-zip")
 
-const { gallery } = require('./controllers/gallery')
-const { singleImage } = require('./controllers/singleImage')
-
+const { singleImageUpload, processSingleImage } = require('./controllers/singleImage')
+const { multipleImageUpload, multipleImageDownload } = require('./controllers/multipleImage')
 
 const fs = require("fs");
 const bodyParser = require("body-parser");
@@ -43,44 +43,17 @@ app.get("/form2", function (req, res) {
 });
 
 
-//Results for multiple square size dimensions
-app.get("/results", (req, res) => {
-    try {
-        const uniqueFolder = req.query.filenames
-        const imgDirPath = path.join(__dirname, "./public/results/images/", uniqueFolder);
-        let imgFiles = fs.readdirSync(imgDirPath).map((image) => {
-            return `images/${uniqueFolder}/${image}`;
-        });
-        res.render("result", { imgFiles, uniqueFolder });
-    } catch (error) {
-        console.log(error.message);
-        const { message } = error
-        return res.render("error", { message })
-    }
-});
 
 //Maintain dimensions 
-app.get("/unresized", async (req, res) => {
-    try {
-        const uniqueFolder = req.query.filenames.trim();
-        const { size, width, height } = req.query;
-        const meta = await sharp(`./public/unresized/${uniqueFolder}.webp`).metadata()
-        const imgDirPath = path.join(uniqueFolder);
-        const imageSource = imgDirPath + ".webp"
-        let info = fs.statSync(path.join(__dirname, "public/unresized", imageSource))
-        let newsize = info.size
-        res.render("unresized", { imageSource, width, height, size, newsize });
-    } catch (error) {
-        console.log(error.message);
-        const { message } = error
-        return res.render("error", { message })
-    }
-});
 
 
-app.post("/upload", singleImage)
+app.get("/unresized", processSingleImage);
+app.post("/upload", singleImageUpload)
 
-app.post("/gallery", gallery)
+
+
+app.get("/download", multipleImageDownload);
+app.post("/gallery", multipleImageUpload);
 
 app.listen(port, () => {
     console.log("port " + port);

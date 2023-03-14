@@ -14,7 +14,7 @@
           <div>
 
           </div>
-          <input
+          <input class="uploadTab"
           
           type="file"
           name="image"
@@ -31,7 +31,7 @@
         </div>
         
         
-        <input
+        <input class="file-name"
         onblur="this.value=removeSpace(this.value)"
         required
           type="text"
@@ -57,10 +57,26 @@
     </footer>
   </body>
   <script>
+    const uploadTab = document.querySelector(".uploadTab")
+    const uploadName = uploadTab.value
+    setInterval(() => {
+    const inputName=document.querySelector(".file-name")
+    if(uploadTab.value){
+    try {
+          console.log(uploadTab.value);
+          console.log(typeof(uploadTab.value));
+          const filename = uploadTab.value.replace(/^.*[\\\/]/, '')
+          console.log(filename);
+          const extensionless = filename.replace(/\.[^/.]+$/, "")
+          console.log(extensionless);
+          inputName.value=extensionless
+    } catch (error) {
+          console.log(error);
+    }}
+    }, 1000);
     function removeSpace(string) {
       return string.split(' ').join('')
     }
-
     let originalSize = document.querySelector('.original-size');
     let fileHeight = document.querySelector('.height-input');
     let fileWidth = document.querySelector('.width-input');

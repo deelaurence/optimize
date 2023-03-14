@@ -20,7 +20,7 @@ app.use(express_1.default.json());
 const path = require("path");
 
 
-const singleImage = async (req, res) => {
+const singleImageUpload = async (req, res) => {
     try {
         return __awaiter(this, void 0, void 0, function* () {
             //Check if the frontend form sends data
@@ -115,4 +115,30 @@ const singleImage = async (req, res) => {
     }
 }
 
-module.exports = { singleImage }
+const processSingleImage = async (req, res) => {
+    try {
+        const uniqueFolder = req.query.filenames.trim();
+        const { size, width, height } = req.query;
+        const meta = await sharp(`./public/unresized/${uniqueFolder}.webp`).metadata()
+        const imgDirPath = path.join(uniqueFolder);
+        const imageSource = imgDirPath + ".webp"
+        let info = fs.statSync(path.join("./public/unresized", imageSource))
+        let newsize = info.size
+        setTimeout(() => {
+            try {
+                fs.rm(path.join("./public/unresized", imageSource), () => {
+                    console.log('deleted');
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }, 30000);
+        res.render("unresized", { imageSource, width, height, size, newsize });
+    } catch (error) {
+        console.log(error.message);
+        const { message } = error
+        return res.render("error", { message })
+    }
+}
+
+module.exports = { singleImageUpload, processSingleImage }
