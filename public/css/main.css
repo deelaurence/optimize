@@ -1,13 +1,18 @@
 * {
+    
     font-family: space grotesk;
 }
 
 .input-hide {
-    visibility: hidden;
+    transform: translateY(-20px);
     opacity: 0;
-    transition: .2s;
+    transition: 1s;
+    
 }
-
+.button-shift{
+    transition: 1s;
+    transform: translateY(-70px);
+}
 body {
     background-image: linear-gradient(#ffffff, #ffffff);
     color: #222222;

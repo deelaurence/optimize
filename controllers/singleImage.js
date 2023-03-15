@@ -23,32 +23,41 @@ const path = require("path");
 const singleImageUpload = async (req, res) => {
     try {
         return __awaiter(this, void 0, void 0, function* () {
-            //Check if the frontend form sends data
+            //Check if the frontend form sends image data data
             if (!req.files) {
                 let message = "File Empty"
                 return res.render("error", { message })
             }
             console.log(req.files);
+
             if (req.files) {
                 const { image } = req.files;
                 const { filename, fileheight, filewidth } = req.body
                 const folderName = `public/results/images/${filename}`
                 //pass the name inputed as the file name down
                 let prop = encodeURIComponent(filename)
+                //check if the file is an image
                 if (!image.mimetype.includes("image")) {
                     let message = "Please Select An Image"
                     return res.render("error", { message })
                 }
+                //logic for conversion
                 async function resizeImage() {
                     try {
+                        //get info about the uploaded image
                         const { height, width, size } = await sharp(image.data).metadata()
+                        //check if the image with the name exists on server
                         if (fs.existsSync("./public/unresized/" + filename + ".webp")) {
                             throw new Error('File name exists already')
                         }
                         //If user decides to manually input dimensions
-                        if (fileheight && filewidth) {
+
+                        if (fileheight || filewidth) {
+                            //Check if BOTH width and height are provided
+                            if (!fileheight || !filewidth) {
+                                throw new Error('Values for both the Height and Width should be provided')
+                            }
                             const metadata = await sharp(image.data).metadata()
-                            console.log(fileheight, filewidth);
                             await sharp(image.data)
                                 .resize({
                                     width: Number(fileheight),
@@ -67,6 +76,12 @@ const singleImageUpload = async (req, res) => {
                             return res.redirect("/unresized?" + query)
                         }
                         else {
+                            //Check if the user did not send the file width or height 
+                            //and do not click the checkbox to indicate maintaining 
+                            //original size
+                            if (!fileheight && !filewidth & req.body.originalSize != "on") {
+                                throw new Error("File Width and Height cannot be empty")
+                            }
                             const { height, width, size } = await sharp(image.data).metadata()
                             const metadata = await sharp(image.data).metadata()
                             await sharp(image.data)

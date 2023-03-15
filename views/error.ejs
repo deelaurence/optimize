@@ -1,8 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
   <%- include('./head'); %>
-  <body style="text-align: center;">
-    <h1>Something went wrong</h1>
+  <body style="text-align: center">
+    <div>
+      <img
+        src="https://i.pinimg.com/564x/b8/b8/f7/b8b8f787c454cf1ded2d9d870707ed96.jpg"
+        alt=""
+      />
+    </div>
     <p><%= message %></p>
   </body>
+  <style>
+    div {
+      position: absolute;
+      left: 50vw;
+      top: 50vh;
+      transform: translate(-50%, -50%);
+      overflow: hidden;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    img {
+      width: 350px;
+    }
+    p {
+      position: absolute;
+      top: 70vh;
+      left: 50vw;
+      font-size: 12px;
+      color: orangered;
+      transform: translate(-50%, -50%);
+      background: rgba(257, 257, 257, 0.9);
+    }
+  </style>
 </html>

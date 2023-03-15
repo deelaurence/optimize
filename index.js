@@ -50,8 +50,6 @@ app.get("/form2", function (req, res) {
 app.get("/unresized", processSingleImage);
 app.post("/upload", singleImageUpload)
 
-
-
 app.get("/download", multipleImageDownload);
 app.post("/gallery", multipleImageUpload);
 
