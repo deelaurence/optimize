@@ -64,26 +64,34 @@ const singleImageUpload = async (req, res) => {
                                     height: Number(filewidth)
                                 })
                                 .toFile("./public/unresized/" + filename + ".webp")
+                            //Query string allows me pass the information to the 
+                            //controller I am res.redirecting to. This would make it
+                            //Availavble on the clientside
                             const querystring = require('querystring')
                             const query = querystring.stringify({
                                 "filenames": prop,
                                 "size": size,
                                 "width": filewidth,
                                 "height": fileheight
-
                             })
-
+                            //redirect to the next route and call the singleImageProcess
+                            //controller
                             return res.redirect("/unresized?" + query)
                         }
+                        //This block runs is meant to run if the user does not send
+                        //the file height and size. it extracts the original picture
+                        //dimension 
                         else {
                             //Check if the user did not send the file width or height 
                             //and do not click the checkbox to indicate maintaining 
-                            //original size
+                            //original dimensions
                             if (!fileheight && !filewidth & req.body.originalSize != "on") {
                                 throw new Error("File Width and Height cannot be empty")
                             }
+                            //extract original dimensions from meta data
                             const { height, width, size } = await sharp(image.data).metadata()
                             const metadata = await sharp(image.data).metadata()
+                            //logic for conversion
                             await sharp(image.data)
                                 .resize({
                                     width: width,
@@ -92,8 +100,8 @@ const singleImageUpload = async (req, res) => {
                                 .toFile("./public/unresized/" + filename + ".webp")
 
                         }
-                        //if user didn't select origial size option or input size 
-
+                         //This is the content of the query string if
+                         //original dimensions is maintained
                         if (req.body.originalSize) {
                             const querystring = require('querystring')
                             const query = querystring.stringify({
@@ -106,9 +114,6 @@ const singleImageUpload = async (req, res) => {
 
                             return res.redirect("/unresized?" + query)
                         }
-                        // if (req.body.fileheight && req.body.filewidth) {
-                        //                                 return res.redirect("/unresized?" + query)
-                        // }
 
                     } catch (error) {
                         console.log(error.message);
@@ -119,7 +124,6 @@ const singleImageUpload = async (req, res) => {
                 }
                 resizeImage()
 
-                // res.redirect("/result");
             }
 
         })
@@ -137,17 +141,19 @@ const processSingleImage = async (req, res) => {
         const meta = await sharp(`./public/unresized/${uniqueFolder}.webp`).metadata()
         const imgDirPath = path.join(uniqueFolder);
         const imageSource = imgDirPath + ".webp"
+        //Read the info of the file
         let info = fs.statSync(path.join("./public/unresized", imageSource))
         let newsize = info.size
-        setTimeout(() => {
-            try {
-                fs.rm(path.join("./public/unresized", imageSource), () => {
-                    console.log('deleted');
-                })
-            } catch (error) {
-                console.log(error);
-            }
-        }, 30000);
+        //Try to delete the file after some time for later consideration
+        // setTimeout(() => {
+        //     try {
+        //         fs.rm(path.join("./public/unresized", imageSource), () => {
+        //             console.log('deleted');
+        //         })
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // }, 30000);
         res.render("unresized", { imageSource, width, height, size, newsize });
     } catch (error) {
         console.log(error.message);

@@ -3,21 +3,34 @@ const fs = require('fs')
 const path = require('path')
 const sharp = require('sharp')
 const multipleImageUpload = async (req, res) => {
-    //      async function (req, res) {
+    //This is the logic that processes uploaded files
     try {
-        // console.log(req.files.image[0].md5);
+        //Check if user uploads any file that is not an image
+        req.files.image.forEach((image) => {
+            if (!image.mimetype.includes("image")) {
+                let message = "Please Select Only Images"
+                return res.render("error", { message })
+            }
+        })
+        //Check if user selects less than two image
+        if (!req.files.image[0]) {
+            throw new Error("Select more than one Image")
+        }
+        //Extract an almost unique hash values from the first image in the array
+        //To save it as the folder name
+
+
         const folderName = req.files.image[0].md5
 
-        // fs.mkdir(path.join(__dirname, `/public/images/${folderName}`), (err) => {
-
+        //make a new directory with the folder name
         const newDir = fs.mkdir(path.join(`./public/images/${folderName}`), (err) => {
             try {
-
                 if (err) {
-
                     fs.rmSync(path.join(`./public/images/${folderName}`), { recursive: true, force: true });
                     throw new Error("Couldnt make directory");
                 }
+                //For each image in the array call the sharp's function
+                //For processing the image
                 req.files.image.forEach(async (image) => {
                     const processImage = async (size) =>
                         await sharp(image.data)
@@ -33,8 +46,8 @@ const multipleImageUpload = async (req, res) => {
             }
         });
         // return
-        console.log(path.join(__dirname, `../public/images/${folderName}`))
-
+        console.log("Ran line 40 controllers/multipleImage.js");
+        //pass the folder name to the next controller
         const querystring = require('querystring')
         const query = querystring.stringify({
             "foldername": folderName
@@ -49,24 +62,27 @@ const multipleImageUpload = async (req, res) => {
 
 
 const multipleImageDownload = async (req, res) => {
-    console.log("here 1");
+    console.log("Ran line 1 of multipleImageDownload");
 
     try {
-        console.log("here 2");
         const folderName = req.query.foldername
+
         const imgDirPath = path.join(__dirname, `../public/images/${folderName}`);
+        //Read the image names inside the created folder and return an object that
+        //is required to create the zipped folder
+        //path: where to look for the image to zip
+        //name: the name of the the new image
         let imgFiles = fs.readdirSync(imgDirPath).map((image) => {
             return {
                 path: `./public/images/${folderName}/${image}`,
                 name: image
             }
         });
-        console.log('here');
+        console.log('line 76 ran inside multiple image download');
+        //Wait for all images to be processed before zipping
         let fullyprocessed = false;
-        console.log("here");
         const intervalId = setInterval(() => {
             imgFiles.forEach((image) => {
-                // console.log(image);
                 fs.stat(image.path, async (err, stats) => {
                     if (err) {
                         console.log(`File doesn't exist.`)
@@ -91,9 +107,10 @@ const multipleImageDownload = async (req, res) => {
                 clearInterval(intervalId)
                 await res.zip(imgFiles);
                 clearInterval(interval2Id)
+                //Delete folder after some time
                 setTimeout(async () => {
                     fs.rmSync(imgDirPath, { recursive: true, force: true });
-                }, 30000);
+                }, 1800000);
             }
         }, 5000);
 
