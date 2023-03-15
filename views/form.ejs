@@ -101,6 +101,10 @@
 
     setInterval(() => {
       if (originalSize.checked) {
+        buttons.forEach((button) => {
+          button.classList.add("button-shift");
+        });
+        button2.classList.add("button-shift");
         fileWidth.classList.add("input-hide");
         fileHeight.classList.add("input-hide");
         fileWidth.value = null;
